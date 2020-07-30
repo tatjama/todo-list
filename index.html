@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="author" content="Tatjana Markovic, tanja120a@gmail.com">
+        <meta name="description" content="Todo-list . Vanilla JavaScript">
+        <meta name="copyright" content="Tatjana Markovic" >
+        <meta name="owner" content="Tatjana Markovic">
+       
+        <title>TODO list | Vanilla JavaScript </title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+          </head>
+    <body>
+        <div id="root">
+            <form id="todo-form">
+                <label for="todo-input">
+                    What is need todo?
+                </label>
+                <input id="todo-input" type="text" name="text" autocomplete="off">
+                <button type="submit">Add</button>
+            </form>
+            <ul id="todo-list">
+                <!--<li id="todo-0">
+                    <span>Learn some framework!</span>
+                    <button id="button-0">Delete</button>
+                </li>
+                <li>
+                    <span>Do some code!</span>
+                    <button>Delete</button>
+                </li>
+                <li>
+                    <span>Make some app!</span>
+                    <button>Delete</button>
+                </li>-->
+            </ul>
+        </div>
+        <script type="text/javascript">
+            const todoFormEl = document.querySelector('#todo-form');
+            const todoListEl = document.querySelector('#todo-list');
+            const todoInputEl = document.querySelector('#todo-input');
+            const state = {
+                taskName: '',
+                tasks: [
+                    {
+                        id: 'todo-0',
+                        name: 'Learn some framework!'
+                    }
+                ] 
+
+            };
+            let newID = 0;
+            function createTask(name){
+                return{
+                    name, 
+                    id: createID('todo')
+                }
+            }
+            
+            function createID(prefix = 'prefix'){
+                
+                    return  prefix + '-' + ++newID;
+                    
+            }
+            function handleFormSubmit(e) {
+                e.preventDefault();
+                state.tasks = [...state.tasks, createTask(state.taskName)];
+                state.taskName = "";
+                renderInput();
+                renderToDoList();
+            }
+            function renderInput(){
+                 todoInputEl.value = state.taskName;                        
+                
+            }
+            
+            function handleInputChange(e) {
+                state.taskName = e.target.value;
+            }
+            function init() {
+                todoInputEl.addEventListener('change', handleInputChange);
+                todoFormEl.addEventListener('submit', handleFormSubmit);
+                renderInput();
+                renderToDoList();
+            }
+            function createToDoItem(id, name) {
+                const item = document.createElement('li');
+                const span = document.createElement('span');
+                const textContent = document.createTextNode(name);
+
+                //item.setAttribute('id', id)
+                item.id = id;
+
+                span.appendChild(textContent);
+                item.appendChild(span);
+                item.appendChild(createButtonEl(id));
+                
+                return item;
+            }
+            function createButtonEl(id) {
+               
+                const button = document.createElement('button');
+                const textContent = document.createTextNode('Delete');
+                button.setAttribute('type', 'button');                
+                button.addEventListener('click', handleTodoDeleteButtonClick.bind(null, id) )
+                button.appendChild(textContent);
+                return button;
+            }
+            
+
+            function handleTodoDeleteButtonClick(id) {
+                state.tasks = state.tasks.filter((t)=>t.id !== id)
+                renderToDoList();
+            }
+
+            function renderToDoList() {
+                const frag = document.createDocumentFragment();
+                state.tasks.forEach((task)=>{
+                    const item = createToDoItem(task.id, task.name)
+                    frag.appendChild(item);
+                });
+
+                while(todoListEl.lastChild){
+                    todoListEl.removeChild(todoListEl.lastChild)
+                }
+                todoListEl.appendChild(frag)
+            }
+            document.addEventListener('DOMContentLoaded', init)
+        </script>
+        
+    </body>
+</html>
